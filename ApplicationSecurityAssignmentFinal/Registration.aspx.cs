@@ -206,7 +206,7 @@ namespace ApplicationSecurityAssignmentFinal
             {
                 using (SqlConnection con = new SqlConnection(MYDBConnectionString))
                 {
-                    using (SqlCommand cmd = new SqlCommand("INSERT INTO Account VALUES(@first_name, @last_name,@email,@credit_card_no,@credit_card_cvc,@credit_card_date,@password_hash,@password_salt,@dob,@IV,@Key,@LoginAttempts)"))
+                    using (SqlCommand cmd = new SqlCommand("INSERT INTO Account VALUES(@first_name, @last_name,@email,@credit_card_no,@credit_card_cvc,@credit_card_date,@password_hash,@password_salt,@dob,@IV,@Key,@LoginAttempts,@Date)"))
                    
                     {
                         using (SqlDataAdapter sda = new SqlDataAdapter())
@@ -224,6 +224,7 @@ namespace ApplicationSecurityAssignmentFinal
                             cmd.Parameters.AddWithValue("@IV", Convert.ToBase64String(IV));
                             cmd.Parameters.AddWithValue("@Key", Convert.ToBase64String(Key));
                             cmd.Parameters.AddWithValue("@LoginAttempts", 0);
+                            cmd.Parameters.AddWithValue("Date",DateTime.Now);
                             cmd.Connection = con;
 
                             try
