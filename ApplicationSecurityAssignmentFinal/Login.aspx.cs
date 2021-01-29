@@ -80,26 +80,36 @@ namespace ApplicationSecurityAssignmentFinal
                     string userHash = Convert.ToBase64String(hashWithSalt);
                     if (userHash == dbHash)
                     {
-                        if (ValidateCaptcha())
+                        var entrydate = GetDate(userid);
+                        var dateentry = DateTime.Parse(entrydate);
+                        var minutes = (DateTime.Now - dateentry).TotalMinutes;
+                        if (minutes < 15)
                         {
-
-                            Session["LoggedIn"] = tb_userid.Text.Trim();
-
-                            string guid = Guid.NewGuid().ToString();
-                            Session["AuthToken"] = guid;
-
-                            Response.Cookies.Add(new HttpCookie("AuthToken", guid));
-
-                            string attempts = GetLoginAttempts(userid);
-
-                            if (Int64.Parse(attempts) < 3)
+                            if (ValidateCaptcha())
                             {
-                                Response.Redirect("HomePage.aspx", false);
+
+                                Session["LoggedIn"] = tb_userid.Text.Trim();
+
+                                string guid = Guid.NewGuid().ToString();
+                                Session["AuthToken"] = guid;
+
+                                Response.Cookies.Add(new HttpCookie("AuthToken", guid));
+
+                                string attempts = GetLoginAttempts(userid);
+
+                                if (Int64.Parse(attempts) < 3)
+                                {
+                                    Response.Redirect("HomePage.aspx", false);
+                                }
+                                else if (Int64.Parse(attempts) >= 3)
+                                {
+                                    lblMessage.Text = "Exceeded Login Attempts";
+                                }
                             }
-                            else if (Int64.Parse(attempts) >= 3)
-                            {
-                                lblMessage.Text = "Exceeded Login Attempts";
-                            }
+                        }
+                        else 
+                        {
+                            Response.Redirect("ChangePassword.aspx", false);
                         }
                     }
                     else if (userHash != dbHash)
@@ -360,6 +370,41 @@ namespace ApplicationSecurityAssignmentFinal
                             if (reader["LoginAttempts"] != DBNull.Value)
                             {
                                 a = reader["LoginAttempts"].ToString();
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.ToString());
+            }
+            finally { connection.Close(); }
+            return a;
+        }
+
+        protected string GetDate(string userid)
+        {
+            string a = null;
+
+            SqlConnection connection = new SqlConnection(MYDBConnectionString);
+            string sql = "select Date FROM Account WHERE Email=@USERID";
+            SqlCommand command = new SqlCommand(sql, connection);
+            command.Parameters.AddWithValue("@USERID", userid);
+
+            try
+            {
+                connection.Open();
+
+                using (SqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        if (reader["Date"] != null)
+                        {
+                            if (reader["Date"] != DBNull.Value)
+                            {
+                                a = reader["Date"].ToString();
                             }
                         }
                     }
