@@ -74,6 +74,8 @@ namespace ApplicationSecurityAssignmentFinal
             SHA512Managed hashing = new SHA512Managed();
             string dbHash = getDBHash(userid);
             string dbSalt = getDBSalt(userid);
+            string olddbhash = getoldDBHash(userid);
+            string olddbsalt = getoldDBSalt(userid);
             var entrydate = GetDate(userid);
             var dateentry = DateTime.Parse(entrydate);
             var minutes = (DateTime.Now - dateentry).TotalMinutes;
@@ -83,27 +85,42 @@ namespace ApplicationSecurityAssignmentFinal
                 if (dbSalt != null && dbSalt.Length > 0 && dbHash != null && dbHash.Length > 0)
                 {
                     string pwdWithSalt = pwd + dbSalt;
+                    string newpwdwitholdsalt = newpwd + olddbsalt;
+                    
+                    byte[] newhashwitholdsalt = hashing.ComputeHash(Encoding.UTF8.GetBytes(newpwdwitholdsalt));
                     byte[] hashWithSalt = hashing.ComputeHash(Encoding.UTF8.GetBytes(pwdWithSalt));
+                    string newuserhash = Convert.ToBase64String(newhashwitholdsalt);
 
                     string userHash = Convert.ToBase64String(hashWithSalt);
-                    if (userHash == dbHash)
+
+                    if (olddbhash != newuserhash)
                     {
-                        if (minutes > 5) 
-                        { 
-                            oldpassworderror.Visible = true;
-                            oldpassworderror.Text = "works";
-                            bool changed = PasswordChange(userid);
+                        if (userHash == dbHash)
+                        {
+                            if (minutes > 5)
+                            {
+                                oldpassworderror.Visible = true;
+                                oldpassworderror.Text = "works";
+                                bool changed = PasswordChange(userid);
+                            }
+                            else
+                            {
+                                oldpassworderror.Visible = true;
+                                oldpassworderror.Text = "Can't change password so soon!";
+                            }
                         }
-                        else{
+                        else if (userHash != dbHash)
+                        {
                             oldpassworderror.Visible = true;
-                            oldpassworderror.Text = "Can't change password so soon!";
+                            oldpassworderror.Text = "Incorrect Password";
                         }
                     }
-                    else if (userHash != dbHash)
-                    {
+                    else {
+                        oldpassworderror.Text = "Password history error!";
                         oldpassworderror.Visible = true;
-                        oldpassworderror.Text = "Incorrect Password";
                     }
+                    
+
                 }
                 else if (dbHash == null)
                 {
@@ -130,7 +147,7 @@ namespace ApplicationSecurityAssignmentFinal
             {
                 using (SqlConnection con = new SqlConnection(MYDBConnectionString))
                 {
-                    using (SqlCommand cmd = new SqlCommand("UPDATE Account SET password_hash = @password_hash, password_salt = @password_salt, Date = @date WHERE email = @Id"))
+                    using (SqlCommand cmd = new SqlCommand("UPDATE Account SET password_hash = @password_hash, password_salt = @password_salt, Date = @date, old_password_hash = @old_password_hash, old_password_salt = @old_password_salt WHERE email = @Id"))
 
                     {
                         using (SqlDataAdapter sda = new SqlDataAdapter())
@@ -140,6 +157,8 @@ namespace ApplicationSecurityAssignmentFinal
                             cmd.Parameters.AddWithValue("@password_hash", newfinalHash);
                             cmd.Parameters.AddWithValue("@password_salt", newsalt);
                             cmd.Parameters.AddWithValue("@Date", DateTime.Now);
+                            cmd.Parameters.AddWithValue("@old_password_hash", finalHash);
+                            cmd.Parameters.AddWithValue("@old_password_salt", salt);
                             cmd.Connection = con;
 
                             try
@@ -213,6 +232,84 @@ namespace ApplicationSecurityAssignmentFinal
             }
             finally { connection.Close(); }
             return h;
+        }
+
+        protected string getoldDBHash(string userid)
+        {
+            string h = null;
+            SqlConnection connection = new SqlConnection(MYDBConnectionString);
+            string sql = "select old_password_hash FROM Account WHERE email=@USERID";
+            SqlCommand command = new SqlCommand(sql, connection);
+            command.Parameters.AddWithValue("@USERID", userid);
+            try
+            {
+                connection.Open();
+                using (SqlDataReader reader = command.ExecuteReader())
+                {
+
+                    while (reader.Read())
+                    {
+                        if (reader["old_password_hash"] != null)
+                        {
+                            if (reader["old_password_hash"] != DBNull.Value)
+                            {
+                                h = reader["old_password_hash"].ToString();
+                            }
+                        }
+                        if (reader["old_password_hash"] == null)
+                        {
+                            Label1.Text = "Invalid";
+                            h = "1";
+                        }
+                    }
+
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.ToString());
+            }
+            finally { connection.Close(); }
+            return h;
+        }
+
+        protected string getoldDBSalt(string userid)
+        {
+            string s = null;
+            SqlConnection connection = new SqlConnection(MYDBConnectionString);
+            string sql = "select old_password_salt FROM ACCOUNT WHERE email=@USERID";
+            SqlCommand command = new SqlCommand(sql, connection);
+            command.Parameters.AddWithValue("@USERID", userid);
+            try
+            {
+                connection.Open();
+                using (SqlDataReader reader = command.ExecuteReader())
+                {
+
+
+                    while (reader.Read())
+                    {
+                        if (reader["old_password_salt"] != null)
+                        {
+                            if (reader["old_password_salt"] != DBNull.Value)
+                            {
+                                s = reader["old_password_salt"].ToString();
+                            }
+                        }
+                        if (reader["old_password_salt"] == null)
+                        {
+                            Label1.Text = "Invalid";
+                            s = "1";
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.ToString());
+            }
+            finally { connection.Close(); }
+            return s;
         }
 
         protected string getDBSalt(string userid)
