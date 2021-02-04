@@ -24,14 +24,15 @@
                 <p>Login Attempts: <asp:Label ID="attemptslabel" runat="server" Text="0"></asp:Label></p>
                 
                 <p>Username: <asp:TextBox ID="tb_userid" runat="server"></asp:TextBox></p>
-                <p>Password: <asp:TextBox ID="tb_pwd" runat="server"></asp:TextBox></p>
+                <p>Password: <asp:TextBox ID="tb_pwd" runat="server" TextMode="Password"></asp:TextBox></p>
                 <p>
                     <asp:Button ID="btnSubmit" runat="server" Text="Login" OnClick="LoginMe" />
                     <asp:Button ID="resetattempts" runat="server" Text="Reset" OnClick="ResetAttempts" />
+                    <asp:Button ID="changepassword" runat="server" Text="Change Password" OnClick="passwordchangeredirect" />
                 <br />
                 <br />
-                <asp:Label ID="lblMessage" runat="server">Error message here</asp:Label>
-                    <asp:Label ID="Label1" runat="server">Error message here</asp:Label>
+                <asp:Label ID="lblMessage" runat="server" Visible="false">Error message here</asp:Label>
+                    
             </p>
                     </fieldset>
             <input type="hidden" id="g-recaptcha-response" name="g-recaptcha-response" />

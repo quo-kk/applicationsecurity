@@ -104,6 +104,7 @@ namespace ApplicationSecurityAssignmentFinal
                                 else if (Int64.Parse(attempts) >= 3)
                                 {
                                     lblMessage.Text = "Exceeded Login Attempts";
+                                    lblMessage.Visible = true;
                                 }
                             }
                         }
@@ -116,26 +117,30 @@ namespace ApplicationSecurityAssignmentFinal
                     {
                         ChangeLoginAttempts(userid);
                         
-                        lblMessage.Text = "Incorrect Password";
-                        
+                        lblMessage.Text = "Incorrect Username or Password";
+                        lblMessage.Visible = true;
+
                         string attempts = GetLoginAttempts(userid);
 
                         attemptslabel.Text = attempts;
 
                         if (Int64.Parse(attempts) >= 3)
                         {
-                            lblMessage.Text = "Exceeded login attempts";
+                            lblMessage.Text = "Exceeded login attempts, please reset your password";
                             attemptslabel.Text = "3";
+                            lblMessage.Visible = true;
                         }
                     }
                 }
                 else if (dbHash == null)
                 {
-                    lblMessage.Text = "Incorrect Username";
+                    lblMessage.Text = "Incorrect Username or Password";
+                    lblMessage.Visible = true;
                 }
                 else if (dbHash == null && pwd == "") 
                 {
-                    lblMessage.Text = "Error";
+                    lblMessage.Text = "Incorrect Username or Password";
+                    lblMessage.Visible = true;
                 }
             }
             catch (Exception ex)
@@ -169,7 +174,8 @@ namespace ApplicationSecurityAssignmentFinal
                         }
                         if (reader["password_hash"] == null)
                         {
-                            Label1.Text = "Invalid";
+                            lblMessage.Text = "Invalid";
+                            lblMessage.Visible = true;
                             h = "1";
                         }
                     }
@@ -209,7 +215,8 @@ namespace ApplicationSecurityAssignmentFinal
                         }
                         if (reader["password_salt"] == null)
                         {
-                            Label1.Text = "Invalid";
+                            lblMessage.Text = "Invalid";
+                            lblMessage.Visible = true;
                             s = "1";
                         }
                     }
@@ -422,6 +429,11 @@ namespace ApplicationSecurityAssignmentFinal
         {
             string userid = tb_userid.Text.ToString().Trim();
             ResetLoginAttempts(userid);
+        }
+
+        protected void passwordchangeredirect(object sender, EventArgs e)
+        {
+            Response.Redirect("ChangePassword.aspx");
         }
     }
 }

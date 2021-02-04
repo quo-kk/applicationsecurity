@@ -111,6 +111,12 @@ namespace ApplicationSecurityAssignmentFinal
                 validated = false;
                 confirmpwderror.Text = "Field cannot be left empty";
             }
+            if (password.Text != confirmpwd.Text)
+            {
+                passworderror.Visible = true;
+                validated = false;
+                passworderror.Text = "Passwords do not match!";
+            }
             if (dateofbirth.Text == "")
             {
                 dateofbirtherror.Visible = true;
@@ -126,6 +132,18 @@ namespace ApplicationSecurityAssignmentFinal
             try
             {
                 DateTime.Parse(dateofbirth.Text);
+                int passwordstrength = checkPassword(password.Text);
+                if (passwordstrength < 5) {
+                    passworderror.Text = "Password is too weak, please try again!";
+                    passworderror.Visible = true;
+                    validated = false;
+                }
+                bool emailindb = GetEmail();
+                if (emailindb == false)
+                {
+                    emailerror.Text = "Email already in use!";
+                    validated = false;
+                }
             }
             catch 
             {
@@ -190,13 +208,13 @@ namespace ApplicationSecurityAssignmentFinal
                 default:
                     break;
             }
-                pwdchecker.Text = "Status: " + status;
+              
             if (scores < 4)
             {
-                pwdchecker.ForeColor = Color.Red;
+                
                 return;
             }
-                pwdchecker.ForeColor = Color.Green;
+                
         }
 
         protected void createAccount()
@@ -206,7 +224,7 @@ namespace ApplicationSecurityAssignmentFinal
             {
                 using (SqlConnection con = new SqlConnection(MYDBConnectionString))
                 {
-                    using (SqlCommand cmd = new SqlCommand("INSERT INTO Account VALUES(@first_name, @last_name,@email,@credit_card_no,@credit_card_cvc,@credit_card_date,@password_hash,@password_salt,@dob,@IV,@Key,@LoginAttempts,@Date)"))
+                    using (SqlCommand cmd = new SqlCommand("INSERT INTO Account VALUES(@first_name, @last_name,@email,@credit_card_no,@credit_card_cvc,@credit_card_date,@password_hash,@password_salt,@dob,@IV,@Key,@LoginAttempts,@Date,@old_password_hash,@old_password_salt)"))
                    
                     {
                         using (SqlDataAdapter sda = new SqlDataAdapter())
@@ -217,14 +235,16 @@ namespace ApplicationSecurityAssignmentFinal
                             cmd.Parameters.AddWithValue("@email", email.Text.Trim());
                             cmd.Parameters.AddWithValue("@credit_card_no", Convert.ToBase64String(encryptData(creditcardnum.Text.Trim())));
                             cmd.Parameters.AddWithValue("@credit_card_cvc", creditcardcvc.Text.Trim());
-                            cmd.Parameters.AddWithValue("@credit_card_date", DateTime.Parse(creditcardexp.Text.Trim()));
+                            cmd.Parameters.AddWithValue("@credit_card_date", creditcardexp.Text.Trim());
                             cmd.Parameters.AddWithValue("@password_hash", finalHash);
                             cmd.Parameters.AddWithValue("@password_salt", salt);
                             cmd.Parameters.AddWithValue("@dob", DateTime.Parse(dateofbirth.Text.Trim()));
                             cmd.Parameters.AddWithValue("@IV", Convert.ToBase64String(IV));
                             cmd.Parameters.AddWithValue("@Key", Convert.ToBase64String(Key));
                             cmd.Parameters.AddWithValue("@LoginAttempts", 0);
-                            cmd.Parameters.AddWithValue("Date",DateTime.Now);
+                            cmd.Parameters.AddWithValue("@Date",DateTime.Now);
+                            cmd.Parameters.AddWithValue("@old_password_hash", "");
+                            cmd.Parameters.AddWithValue("@old_password_salt", "");
                             cmd.Connection = con;
 
                             try
@@ -280,6 +300,45 @@ namespace ApplicationSecurityAssignmentFinal
             }
             finally { }
             return cipherText;
+        }
+
+        protected bool GetEmail()
+        {
+            string a = null;
+
+            SqlConnection connection = new SqlConnection(MYDBConnectionString);
+            string sql = "select Email FROM Account";
+            SqlCommand command = new SqlCommand(sql, connection);
+
+            try
+            {
+                connection.Open();
+
+                using (SqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        if (reader["Email"] != null)
+                        {
+                            if (reader["Email"] != DBNull.Value)
+                            {
+                                a = reader["Email"].ToString();
+                                if (a.ToLower() == email.Text.ToString().ToLower()) 
+                                {
+                                    emailerror.Text = "Email is already in use!";
+                                    return false;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.ToString());
+            }
+            finally { connection.Close(); }
+            return true;
         }
 
     }

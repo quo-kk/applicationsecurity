@@ -97,22 +97,31 @@ namespace ApplicationSecurityAssignmentFinal
                     {
                         if (userHash == dbHash)
                         {
-                            if (minutes > 5)
+                            if (newpassword.Text.ToString() == confirmpassword.Text.ToString())
                             {
-                                oldpassworderror.Visible = true;
-                                oldpassworderror.Text = "works";
-                                bool changed = PasswordChange(userid);
+                                if (minutes > 5)
+                                {
+                                    oldpassworderror.Visible = true;
+                                    oldpassworderror.Text = "works";
+                                    bool changed = PasswordChange(userid);
+                                }
+                                else
+                                {
+                                    oldpassworderror.Visible = true;
+                                    oldpassworderror.Text = "Can't change password so soon!";
+                                }
                             }
-                            else
-                            {
-                                oldpassworderror.Visible = true;
-                                oldpassworderror.Text = "Can't change password so soon!";
+                            else {
+                                
+                                    confirmpassworderror.Text = "Passwords in both textboxes do not match!";
+                                    confirmpassworderror.Visible = true;
+                                
                             }
                         }
                         else if (userHash != dbHash)
                         {
                             oldpassworderror.Visible = true;
-                            oldpassworderror.Text = "Incorrect Password";
+                            oldpassworderror.Text = "Incorrect Username or Password";
                         }
                     }
                     else {
@@ -125,7 +134,7 @@ namespace ApplicationSecurityAssignmentFinal
                 else if (dbHash == null)
                 {
                     emailerror.Visible = true;
-                    emailerror.Text = "Incorrect Username";
+                    emailerror.Text = "Incorrect Username or Password";
                 }
                 else if (dbHash == null && pwd == "")
                 {

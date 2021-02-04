@@ -231,24 +231,6 @@ namespace ApplicationSecurityAssignmentFinal
         protected global::System.Web.UI.WebControls.Label lbl_pwdchecker;
 
         /// <summary>
-        /// checkpassword control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button checkpassword;
-
-        /// <summary>
-        /// pwdchecker control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label pwdchecker;
-
-        /// <summary>
         /// Label8 control.
         /// </summary>
         /// <remarks>

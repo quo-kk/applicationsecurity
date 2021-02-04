@@ -82,19 +82,17 @@
         <p>
             <asp:Label ID="Label5" runat="server" Text="Email Address   "></asp:Label>
             <asp:TextBox ID="email" runat="server" onkeyup="javascript:validatemail()"></asp:TextBox>
-            <asp:Label ID="emailerror" runat="server" Text="Label"></asp:Label>
+            <asp:Label ID="emailerror" runat="server" Text="emailchecker"></asp:Label>
         </p>
         <p>
         <asp:Label ID="Label6" runat="server" Text="Password    "></asp:Label>
         <asp:TextBox ID="password" runat="server" onkeyup="javascript:validatepwd();" TextMode="Password"></asp:TextBox>
             <asp:Label ID="passworderror" runat="server" Text="Label" Visible="False"></asp:Label>
-            <asp:Label ID="lbl_pwdchecker" runat="server" Text="pwdchecker" ></asp:Label>
-            <asp:Button ID="checkpassword" runat="server" Text="Check Password" OnClick="checkpassword_Click" />
-            <asp:Label ID="pwdchecker" runat="server" Text="pwdchecker"></asp:Label>
+            <asp:Label ID="lbl_pwdchecker" runat="server" Text="passwordchecker" ></asp:Label>
         </p>
                 <p>
         <asp:Label ID="Label8" runat="server" Text="Confirm Password    "></asp:Label>
-        <asp:TextBox ID="confirmpwd" runat="server" TextMode="Password"></asp:TextBox>
+        <asp:TextBox ID="confirmpwd" runat="server" TextMode="Password" TextMode="Password"></asp:TextBox>
         <asp:Label ID="confirmpwderror" runat="server" Text="Label" Visible="False"></asp:Label>
 
         </p>
