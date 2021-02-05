@@ -435,5 +435,10 @@ namespace ApplicationSecurityAssignmentFinal
         {
             Response.Redirect("ChangePassword.aspx");
         }
+
+        protected void registerredirect(object sender, EventArgs e)
+        {
+            Response.Redirect("Registration.aspx");
+        }
     }
 }

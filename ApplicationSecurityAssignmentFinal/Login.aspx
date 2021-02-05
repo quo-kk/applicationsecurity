@@ -29,6 +29,7 @@
                     <asp:Button ID="btnSubmit" runat="server" Text="Login" OnClick="LoginMe" />
                     <asp:Button ID="resetattempts" runat="server" Text="Reset" OnClick="ResetAttempts" />
                     <asp:Button ID="changepassword" runat="server" Text="Change Password" OnClick="passwordchangeredirect" />
+                    <asp:Button ID="register" runat="server" Text="Register Account" OnClick="registerredirect" />
                 <br />
                 <br />
                 <asp:Label ID="lblMessage" runat="server" Visible="false">Error message here</asp:Label>

@@ -92,7 +92,7 @@
         </p>
                 <p>
         <asp:Label ID="Label8" runat="server" Text="Confirm Password    "></asp:Label>
-        <asp:TextBox ID="confirmpwd" runat="server" TextMode="Password" TextMode="Password"></asp:TextBox>
+        <asp:TextBox ID="confirmpwd" runat="server" TextMode="Password"></asp:TextBox>
         <asp:Label ID="confirmpwderror" runat="server" Text="Label" Visible="False"></asp:Label>
 
         </p>
